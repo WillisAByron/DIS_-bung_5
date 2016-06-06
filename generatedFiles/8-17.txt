@@ -1,0 +1,9 @@
+0,0,8,Data ID: 8
+1,1,10,Data ID: 10
+2,2,23,Data ID: 23
+3,3,22,Data ID: 22
+4,4,7,Data ID: 7
+5,5,8,Data ID: 8
+6,6,18,Data ID: 18
+7,7,16,Data ID: 16
+8,8,17,Data ID: 17
