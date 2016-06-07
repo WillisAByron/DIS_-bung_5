@@ -1,15 +1,15 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PersistenceManager {
 
 	private static Log log = new Log();
 	private static final PersistenceManager instance;
-	private static int transactionID = 0;
+	private static long transactionID = 0;
 	private static int lsn = 0;
 	private ConcurrentHashMap<Long, Page> buffer;
-	
+	private ConcurrentHashMap<Long, Set<Long>> traID_pageID;
 	
 	static {
 			ConcurrentHashMap<Long, Page> pages = Page.getPages();
@@ -20,23 +20,26 @@ public class PersistenceManager {
 	private PersistenceManager(int clsn, ConcurrentHashMap cHM){
         lsn = clsn;
         buffer = cHM;
+        traID_pageID = new ConcurrentHashMap<Long, Set<Long>>();
 	}
 	
 	public static PersistenceManager getInstance() {
 		return instance;
 	}
 	
-	public int beginTransaction() {
-        int tId = transactionID++;
+	public long beginTransaction() {
+        long tId = transactionID++;
         int clsn = lsn++;
         log.writeLog(Log.BEGIN_OF_TRANSACTION, clsn, tId, null, null);
+        traID_pageID.put(tId, new HashSet<Long>());
 		return tId;
 	}
 	
-	public void write (int taid, Long pageID, String data) {
+	public void write (long taid, Long pageID, String data) {
 		int cLSN = this.lsn++;
         log.writeLog(Log.PAGE, cLSN, taid, pageID, data);
-
+        Set<Long> tmp = traID_pageID.get(taid);
+        tmp.add(pageID);
         Page p;
         if(buffer.containsKey(pageID)) {
             p = buffer.get(pageID);
@@ -51,11 +54,19 @@ public class PersistenceManager {
 
     private void checkBuffer() {
         if (buffer.size() >= 5){
-            buffer.values().forEach(Page::writeToDisk);
+            for (Page p : buffer.values()){
+                p.writeToDisk();
+            }
         }
     }
 
-    public void commit(int tID){
+    public void commit(long tID){
         log.writeLog(Log.END_OF_TRANSACTION, lsn++, tID, null, null);
+        Set<Long> pages = (Set<Long>) traID_pageID.remove(tID);
+        for (Long pID : pages) {
+            Page p = buffer.get(pID);
+            //TODO
+            //page.unUsedBy(aTransactionId);
+        }
     }
 }

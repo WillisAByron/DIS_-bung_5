@@ -1,13 +1,8 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.LogRecord;
 
 
 public class Log {
@@ -29,7 +24,7 @@ public class Log {
 		}
 	}
 	
-	public void writeLog(int logType, int lsn, int traId, Long pageID, String data){
+	public void writeLog(int logType, int lsn, long traId, Long pageID, String data){
 		String type = "";
 		try {
 			switch (logType){

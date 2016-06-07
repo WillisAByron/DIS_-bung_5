@@ -13,16 +13,16 @@ public class Client extends Thread{
 	@Override
 	public void run() {
         // Number of Transactions
-        int transactions = new Random().nextInt(10);
+        int transactions = new Random().nextInt(9) + 1;
 		for (int i = 0; i <= transactions; i++) {
-            int transactionID = this.pM.beginTransaction();
+            long transactionID = this.pM.beginTransaction();
             String data = toString();
 
             // Number of Writes
-            int writes = new Random().nextInt(10);
+            int writes = new Random().nextInt(9) + 1;
             for (int j = 0; j <= writes; j++){
-                Long pageID = Long.valueOf((id * 10 + new Random().nextInt(10)));
-
+                Long pageID = Long.valueOf(((id * 10) + new Random().nextInt(10)));
+                System.out.println(this.id + "," + pageID);
                 pM.write(transactionID, pageID, data);
                 sleepRandom();
             }
