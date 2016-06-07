@@ -40,21 +40,23 @@ public class Redo {
                 StringTokenizer sT = new StringTokenizer(s, ",");
                 int lsn = Integer.parseInt(sT.nextToken());
                 String type = sT.nextToken();
-                int traId = Integer.parseInt(sT.nextToken());
-                Long pageID = Long.parseLong(sT.nextToken());
-                String data = sT.nextToken();
+                if (type == "TE"){
+                    int traId = Integer.parseInt(sT.nextToken());
+                    Long pageID = Long.parseLong(sT.nextToken());
+                    String data = sT.nextToken();
 
-                if (lsn > cLsn){
-                    cLsn = lsn;
-                }
+                    if (lsn > cLsn){
+                        cLsn = lsn;
+                    }
 
-                Page p = pages.get(pageID);
-                if (p == null){
-                    p = new Page(pageID, lsn, data);
-                    pages.put(p.getId(), p);
-                } else if (p.getLsn() < cLsn){
-                    p.setLsn(lsn);
-                    p.setData(data);
+                    Page p = pages.get(pageID);
+                    if (p == null){
+                        p = new Page(pageID, lsn, data);
+                        pages.put(p.getId(), p);
+                    } else if (p.getLsn() < cLsn){
+                        p.setLsn(lsn);
+                        p.setData(data);
+                    }
                 }
             }
         }
