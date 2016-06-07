@@ -10,19 +10,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Page {
 
-	private static Long id;
+	private static Long id = 0L;
 	private int lsn;
 	private String data;
-	private static String path = "C:\\Users\\Glenn\\IdeaProjects\\DIS_-bung_5\\generatedFiles\\";
+	private static String pagePath = "C:\\Users\\Glenn\\IdeaProjects\\DIS_-bung_5\\generatedFiles\\pages\\";
 
 	public static ConcurrentHashMap<Long, Page> getPages(){
 		ConcurrentHashMap<Long, Page> result = null;
-		File[] files = new File(path).listFiles();
+		File[] files = new File(pagePath).listFiles();
 		if (files == null){
 			files = new File[0];
 		}
 		ConcurrentHashMap<Long, Page> pages = new ConcurrentHashMap<>(files.length);
-		for (int i = 0; i <= files.length; i++){
+		for (int i = 0; i < files.length; i++){
 			File file = files[i];
 			FileReader fr = null;
 			try {
@@ -41,8 +41,10 @@ public class Page {
 				e.printStackTrace();
 				result = new ConcurrentHashMap<Long, Page>();
 			}
-			Page p = new Page(sB.toString());
-			pages.put(p.getId(), p);
+			if (!sB.toString().isEmpty()){
+				Page p = new Page(sB.toString());
+				pages.put(p.getId(), p);
+			}
 		}
 		return pages;
 	}
@@ -54,10 +56,10 @@ public class Page {
 	}
 
 	public Page(String s){
-		StringTokenizer sT = new StringTokenizer(s, ",");
-		Long id = Long.parseLong(sT.nextToken());
-		int lsn = Integer.parseInt(sT.nextToken());
-		String date = sT.nextToken();
+			StringTokenizer sT = new StringTokenizer(s, ",");
+			Long id = Long.parseLong(sT.nextToken());
+			int lsn = Integer.parseInt(sT.nextToken());
+			String date = sT.nextToken();
 	}
 
 	public Page(int lsn, String data){
@@ -100,7 +102,7 @@ public class Page {
 	}
 
 	public void writeToDisk() {
-		File file = new File(path + getId() + ".txt");
+		File file = new File(pagePath + getId() + ".txt");
 		try {
 			FileWriter fw = new FileWriter(file);
 			fw.write(toString());

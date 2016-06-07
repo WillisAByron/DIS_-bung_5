@@ -12,14 +12,9 @@ public class PersistenceManager {
 	
 	
 	static {
-		try {
 			ConcurrentHashMap<Long, Page> pages = Page.getPages();
             Redo r = new Redo(pages);
 			instance = new PersistenceManager(r.getLsn(), r.getPages());
-		}
-		catch (Throwable e) {
-		throw new RuntimeException(e.getMessage());
-			}
 		}
 
 	private PersistenceManager(int clsn, ConcurrentHashMap cHM){

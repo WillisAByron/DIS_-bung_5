@@ -44,11 +44,13 @@ public class Log {
 					break;
 			}
 			if (pageID != null && data != null){
-				fW.write(lsn + "," + type + "," + traId + "," + pageID + "," + data + "\n");
+				fW.write(lsn + "," + type + "," + traId + "," + pageID + "," + data);
+				fW.write("\n");
 			} else {
-				fW.write(lsn + "," + type + "," + traId + "," + "," + "\n");
+				fW.write(lsn + "," + type + "," + traId + "," + ",");
+				fW.write("\n");
 			}
-
+			fW.flush();
 		} catch (IOException e){
 			e.printStackTrace();
 		}
