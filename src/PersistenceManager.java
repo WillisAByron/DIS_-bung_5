@@ -1,25 +1,30 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PersistenceManager {
 
 	private static Log log = new Log();
 	private static final PersistenceManager instance;
-	private static int transactionID=0;
+	private static int transactionID = 0;
 	private static int lsn = 0;
-	private List<Page> buffer = new ArrayList<>();
+	private ConcurrentHashMap<Long, Page> buffer;
 	
 	
 	static {
 		try {
-			instance = new PersistenceManager();
+			ConcurrentHashMap<Long, Page> pages = Page.getPages();
+            Redo r = new Redo(pages);
+			instance = new PersistenceManager(r.getLsn(), r.getPages());
 		}
 		catch (Throwable e) {
 		throw new RuntimeException(e.getMessage());
 			}
 		}
 
-	private PersistenceManager(){
+	private PersistenceManager(int clsn, ConcurrentHashMap cHM){
+        lsn = clsn;
+        buffer = cHM;
 	}
 	
 	public static PersistenceManager getInstance() {
@@ -27,29 +32,35 @@ public class PersistenceManager {
 	}
 	
 	public int beginTransaction() {
-		return transactionID++;
+        int tId = transactionID++;
+        int clsn = lsn++;
+        log.writeLog(Log.BEGIN_OF_TRANSACTION, clsn, tId, null, null);
+		return tId;
 	}
 	
-	public void commit(int taid){
-		
-	}
-	
-	public void write (int taid, Page page) {
+	public void write (int taid, Long pageID, String data) {
 		int cLSN = this.lsn++;
-		page.setLSN(cLSN);
-		log.log(taid, page);
-		
-		if (buffer.contains(page)) {
-			buffer.remove(page);
-		}
-		
-		buffer.add(page);
-		if (buffer.size() >= 5) {
-			for (Page p : buffer) {
-				p.writeToDisk();
-			}
-			
-			buffer = new ArrayList<>();
-		}
+        log.writeLog(Log.PAGE, cLSN, taid, pageID, data);
+
+        Page p;
+        if(buffer.containsKey(pageID)) {
+            p = buffer.get(pageID);
+            p.setLsn(cLSN);
+            p.setData(data);
+        } else {
+            p = new Page(cLSN, data);
+            buffer.put(pageID, p);
+        }
+        checkBuffer();
 	}
+
+    private void checkBuffer() {
+        if (buffer.size() >= 5){
+            buffer.values().forEach(Page::writeToDisk);
+        }
+    }
+
+    public void commit(int tID){
+        log.writeLog(Log.END_OF_TRANSACTION, lsn++, tID, null, null);
+    }
 }

@@ -17,11 +17,11 @@ public class Log {
 	public static int PAGE = 2;
 
 	private List<String> lines = new ArrayList<String>();
-	String path = "C:\\Users\\Glenn\\IdeaProjects\\DIS_Übung5\\generatedFiles\\log\\";
+	public static String path = "C:\\Users\\Glenn\\IdeaProjects\\DIS_-bung_5\\generatedFiles\\log\\";
 	private FileWriter fW;
 	
 	public Log(){
-		File file = new File(path + "log");
+		File file = new File(path + "log.txt");
 		try {
 			fW = new FileWriter(file, true);
 		} catch (IOException e) {
@@ -43,7 +43,12 @@ public class Log {
 					type = "P";
 					break;
 			}
-			fW.write(lsn + "," + type + "," + traId + "," + pageID + "," + data);
+			if (pageID != null && data != null){
+				fW.write(lsn + "," + type + "," + traId + "," + pageID + "," + data + "\n");
+			} else {
+				fW.write(lsn + "," + type + "," + traId + "," + "," + "\n");
+			}
+
 		} catch (IOException e){
 			e.printStackTrace();
 		}

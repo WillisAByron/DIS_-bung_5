@@ -21,7 +21,7 @@ public class Client extends Thread{
             // Number of Writes
             int writes = new Random().nextInt(10);
             for (int j = 0; j <= writes; j++){
-                int pageID = id * 10 + new Random().nextInt(10);
+                Long pageID = Long.valueOf((id * 10 + new Random().nextInt(10)));
 
                 pM.write(transactionID, pageID, data);
                 sleepRandom();

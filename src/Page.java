@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Page {
 
-	private Long id;
+	private static Long id;
 	private int lsn;
 	private String data;
-	private static String path = "C:\\Users\\Glenn\\IdeaProjects\\DIS_Übung5\\generatedFiles\\";
+	private static String path = "C:\\Users\\Glenn\\IdeaProjects\\DIS_-bung_5\\generatedFiles\\";
 
 	public static ConcurrentHashMap<Long, Page> getPages(){
 		ConcurrentHashMap<Long, Page> result = null;
@@ -60,8 +60,9 @@ public class Page {
 		String date = sT.nextToken();
 	}
 
-	public void setLSN(int lsn){
-		this.lsn = lsn;
+	public Page(int lsn, String data){
+		this(id, lsn, data);
+		id = id + 1;
 	}
 
 	public Long getId() {
