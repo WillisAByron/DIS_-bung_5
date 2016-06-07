@@ -35,6 +35,7 @@ public class Redo {
 
         String[] logs = sB.toString().split("\n");
         for (String s : logs){
+            System.out.println(s);
             if (!s.isEmpty()){
                 StringTokenizer sT = new StringTokenizer(s, ",");
                 int lsn = Integer.parseInt(sT.nextToken());
