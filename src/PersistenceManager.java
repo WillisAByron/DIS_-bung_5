@@ -39,7 +39,9 @@ public class PersistenceManager {
 		int cLSN = this.lsn++;
         log.writeLog(Log.PAGE, cLSN, taid, pageID, data);
         Set<Long> tmp = traID_pageID.get(taid);
-        tmp.add(pageID);
+        if (tmp != null){
+            tmp.add(pageID);
+        }
         Page p;
         if(buffer.containsKey(pageID)) {
             p = buffer.get(pageID);
@@ -62,11 +64,15 @@ public class PersistenceManager {
 
     public void commit(long tID){
         log.writeLog(Log.END_OF_TRANSACTION, lsn++, tID, null, null);
-        Set<Long> pages = (Set<Long>) traID_pageID.remove(tID);
-        for (Long pID : pages) {
-            Page p = buffer.get(pID);
-            //TODO
-            //page.unUsedBy(aTransactionId);
+
+        Set<Long> pageIDs = (Set<Long>) traID_pageID.remove(tID);
+        if (pageIDs != null){
+            for (Long l : pageIDs){
+                Page p = Page.getPages().get(l);
+                if (p != null){
+                    p.setCommitted(true);
+                }
+            }
         }
     }
 }

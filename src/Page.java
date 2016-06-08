@@ -1,10 +1,4 @@
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +8,7 @@ public class Page {
 	private int lsn;
 	private String data;
 	private static String pagePath = "C:\\Users\\Glenn\\IdeaProjects\\DIS_-bung_5\\generatedFiles\\pages\\";
+	private boolean committed;
 
 	public static ConcurrentHashMap<Long, Page> getPages(){
 		ConcurrentHashMap<Long, Page> result = null;
@@ -115,5 +110,13 @@ public class Page {
 	@Override
 	public String toString(){
 		return id + "," + lsn + "," + data;
+	}
+
+	public boolean getCommitted(){
+		return committed;
+	}
+
+	public void setCommitted(boolean b){
+		this.committed = b;
 	}
 }
